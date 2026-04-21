@@ -1,0 +1,43 @@
+import pandas as pd
+import seaborn as sns
+
+# Load dataset
+df = sns.load_dataset('tips')
+
+# Display first 5 rows
+df.head()
+# Statistical summary
+df.describe()
+# Shape (rows, columns)
+df.shape
+# Separate numerical and categorical features
+
+numerical_features = df.select_dtypes(include=['int64', 'float64'])
+categorical_features = df.select_dtypes(include=['object', 'category'])
+
+print("Numerical Features:\n", numerical_features.head())
+print("\nCategorical Features:\n", categorical_features.head())
+# Check missing values
+df.isnull().sum()
+
+# Fill missing values
+# Numerical → median
+df[numerical_features.columns] = 	df[numerical_features.columns].fillna(df.median(numeric_only=True))
+# Categorical → mode
+for col in categorical_features.columns:
+    df[col].fillna(df[col].mode()[0], inplace=True)
+# Verify
+df.isnull().sum()
+import matplotlib.pyplot as plt
+
+# Boxplot for all numerical features
+for col in numerical_features.columns:
+    plt.figure()
+    sns.boxplot(x=df[col])
+    plt.title(f"Boxplot of {col}")
+    plt.show()
+Q1 = numerical_features.quantile(0.25)
+Q3 = numerical_features.quantile(0.75)
+IQR = Q3 - Q1
+
+print("IQR:\n", IQR)
