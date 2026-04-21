@@ -1,0 +1,40 @@
+1.	# Training Corpus
+2.	corpus = """
+3.	I like machine learning
+4.	I like deep learning
+5.	I enjoy machine learning
+6.	I enjoy data science
+7.	Machine learning is interesting
+8.	Deep learning is powerful
+9.	"""
+10.	import nltk
+11.	from nltk.util import ngrams
+12.	from collections import defaultdict, Counter
+13.	import random
+14.	
+15.	nltk.download('punkt')
+16.	nltk.download('punkt_tab')
+17.	tokens=nltk.word_tokenize(corpus.lower())
+18.	#build ngram model
+19.	n=2
+20.	bigrams=list(ngrams(tokens,n))
+21.	print(bigrams)
+22.	#create the probability model
+23.	model=defaultdict(Counter)
+24.	for w1,w2, in bigrams:
+25.	  model[w1][w2]+=1
+26.	model
+27.	#function to predict next word
+28.	def predict_nextword(word):
+29.	  word=word.lower()
+30.	  if word in model:
+31.	    next_words=model[word]
+32.	    prediction=max(next_words,key=next_words.get)
+33.	    return prediction
+34.	  else:
+35.	    return "No prediction is done"
+36.	# test seed words
+37.	print("I ->", predict_nextword("I"))
+38.	print("machine ->", predict_nextword("machine"))
+39.	print("deep ->", predict_nextword("deep"))
+40.	print("data ->", predict_nextword("data"))
