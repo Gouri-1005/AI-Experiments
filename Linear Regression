@@ -1,0 +1,60 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+url = "https://raw.githubusercontent.com/selva86/datasets/master/Advertising.csv"
+df = pd.read_csv(url)
+print("First 5 rows:\n", df.head())
+print("\nDataset Info:\n")
+print(df.info())
+print("\nStatistics: \n", df.describe())
+#Use only TV advertising for simple linear regression
+x=df['TV'].values
+y=df['sales'].values
+
+#Normalize data (optional but good practice)
+x=(x-x.mean())/x.std()
+plt.scatter(x,y)
+plt.title("TV vs Sales")
+plt.xlabel("TV (Normalised)")
+plt.ylabel("Sales")
+plt.show()
+x=x.reshape(-1,1)
+m=len(y)
+
+#Add bias term (column of 1s)
+x_b=np.c_[np.ones((m,1)), x]
+def hypothesis(x, theta):
+  return np.dot(x, theta)
+def cost_function(x,y,theta):
+  m=len(y)
+  return (1/(2*m)) * np.sum((hypothesis(x,theta)-y)**2)
+def gradient_descent(x,y,theta,lr,iterations):
+  m=len(y)
+  cost_history=[]
+
+  for i in range(iterations):
+    gradients=(1/m)*np.dot(x.T, (hypothesis(x, theta)-y))
+    theta=theta-lr*gradients
+    cost_history.append(cost_function(x,y,theta))
+  return theta, cost_history
+#initial parameters
+theta=np.zeros(2)
+learning_rate=0.01
+iterations=1000
+
+theta, cost_history=gradient_descent(x_b,y,theta,learning_rate, iterations)
+print("\nBest parameters(theta):",theta)
+y_pred=hypothesis(x_b, theta)
+
+plt.scatter(x,y)
+plt.plot(x, y_pred, color='red')
+plt.title("Best Fit Line")
+plt.xlabel("TV (Normalised)")
+plt.ylabel("Sales")
+plt.show()
+plt.plot(range(iterations), cost_history)
+plt.title("Cost Function vs Iterations")
+plt.xlabel("Iterations")
+plt.ylabel("Cost")
+plt.show()
