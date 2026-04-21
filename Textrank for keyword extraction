@@ -1,0 +1,36 @@
+# Training Corpus
+text = """
+I like machine learning
+I like deep learning
+I enjoy machine learning
+I enjoy data science
+Machine learning is interesting
+Deep learning is powerful
+"""
+#importing basic libraries
+import nltk
+import networkx as nx
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+import string
+#download requirements
+nltk.download('punkt')
+nltk.download('stopwords')
+def textrank_keyword(text, topn=5, window_size=4):
+  words=word_tokenize(text.lower())
+  stop_words=set(stopwords.words('english'))
+  words=[w for w in words if w not in stop_words and
+         w not in string.punctuation]
+  graph=nx.Graph()
+
+  for i, word in enumerate(words):
+    for j in range(i+1, window_size+i):
+      if(j<len(words)):
+        graph.add_edge(word, words[j])
+  scores=nx.pagerank(graph)
+  ranked_words=sorted(scores.items(), key=lambda x:x[1], reverse=True)
+  keywords=[word for word, score in ranked_words[:topn]]
+  return keywords
+nltk.download('punkt_tab')
+print(textrank_keyword(text, topn=8))
+
