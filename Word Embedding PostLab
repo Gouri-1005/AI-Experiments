@@ -1,0 +1,29 @@
+documents = [
+"Deep learning is widely used in image recognition.",
+"Neural networks help computers learn complex patterns.",
+"Pizza is a popular fast food enjoyed by many people."
+]
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+# BoW
+bow = CountVectorizer()
+bow_matrix = bow.fit_transform(documents)
+bow_similarity = cosine_similarity(bow_matrix)
+
+print("BoW Similarity:\n", bow_similarity)
+
+# TF
+tf = CountVectorizer()
+tf_matrix = tf.fit_transform(documents)
+tf_similarity = cosine_similarity(tf_matrix)
+
+print("\nTF Similarity:\n", tf_similarity)
+
+# TF-IDF
+tfidf = TfidfVectorizer()
+tfidf_matrix = tfidf.fit_transform(documents)
+tfidf_similarity = cosine_similarity(tfidf_matrix)
+
+print("\nTF-IDF Similarity:\n", tfidf_similarity)
+
