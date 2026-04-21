@@ -1,0 +1,108 @@
+#import libraries
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import keras
+from keras.datasets import fashion_mnist
+import keras.models as models
+import keras.layers as layers
+from keras import regularizers
+from keras.layers import Dropout
+import tensorflow as tf
+from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras.layers import Dense,Activation,Flatten,Dropout,Conv2D, MaxPooling2D, LeakyReLU
+from tensorflow.keras.utils import to_categorical   #for the categorical data
+print(keras.__version__)
+
+#import the dataset #x: Images and Y: labels of the images
+(train_X,train_Y),(test_X,test_Y)=fashion_mnist.load_data()
+plt.imshow(train_X[0])
+print(train_Y[0])
+print(train_X.shape,train_Y.shape)
+print(test_X.shape, test_Y.shape)
+classes=np.unique(train_Y)
+nClasses=len(classes)
+print(classes)
+print(nClasses)
+train_X=train_X.reshape(-1,28,28,1)
+test_X=test_X.reshape(-1,28,28,1)
+print(train_X.shape,train_Y.shape)
+print(test_X.shape, test_Y.shape)
+#converting the values of the pixels from 0-1
+#type-conversion
+train_X=train_X.astype('float32')
+test_X=test_X.astype('float32')
+train_X=train_X/255
+test_X=test_X/255
+train_Y_one_hot=to_categorical(train_Y)
+test_Y_one_hot=to_categorical(test_Y)
+train_Y[0]
+train_Y_one_hot[0]
+from sklearn.model_selection import train_test_split
+train_X,valid_X,train_label,valid_label=train_test_split(train_X,train_Y_one_hot,test_size=0.2,random_state=13)
+train_X.shape,valid_X.shape,train_label.shape,valid_label.shape
+batch_size=64
+epochs=20
+num_classes=10
+model=tf.keras.Sequential()
+#1st hidden layer
+model.add(tf.keras.layers.Conv2D(32,(3,3),activation="linear",padding='same'))
+model.add(tf.keras.layers.LeakyReLU(alpha=0.1))
+model.add(tf.keras.layers.MaxPooling2D(pool_size=(2,2),padding='same'))
+#2nd hidden layer
+model.add(tf.keras.layers.Conv2D(64,(3,3),activation="linear",padding='same'))
+model.add(tf.keras.layers.LeakyReLU(alpha=0.1))
+model.add(tf.keras.layers.MaxPooling2D(pool_size=(2,2),padding='same'))
+#3rd hidden layer
+model.add(tf.keras.layers.Conv2D(128,(3,3),activation="linear",padding='same'))
+model.add(tf.keras.layers.LeakyReLU(alpha=0.1))
+model.add(tf.keras.layers.MaxPooling2D(pool_size=(2,2),padding='same'))
+model.add(tf.keras.layers.Flatten())
+model.add(tf.keras.layers.Dense(128,activation='linear'))
+model.add(tf.keras.layers.LeakyReLU(alpha=0.1))
+model.add(tf.keras.layers.Dense(num_classes,activation='softmax'))#output final layer
+model.compile(loss=tf.keras.losses.categorical_crossentropy,optimizer=tf.keras.optimizers.Adam(),metrics=['accuracy'])
+48000/64
+model_train=model.fit(train_X,train_label,batch_size=64,epochs=20,verbose=1,validation_data=(valid_X,valid_label))
+testing_evaluation=model.evaluate(test_X,test_Y_one_hot)
+testing_evaluation  #loss,accuracy
+model_train.history
+accuracy=model_train.history['accuracy']
+val_accuracy=model_train.history['val_accuracy']
+loss=model_train.history['loss']
+val_loss=model_train.history['val_loss']
+epochs=range(len(accuracy))
+plt.plot(epochs,accuracy,label='training accuracy')
+plt.plot(epochs,val_accuracy,label='validation accuracy')
+plt.title('evaluating based on accuracy')
+plt.legend()
+plt.show()
+plt.plot(epochs,loss,label='training loss')
+plt.plot(epochs,val_loss,label='validation loss')
+plt.title('evaluating based on loss')
+plt.legend()
+plt.show()
+regmodel=tf.keras.Sequential()
+#1st hidden layer
+regmodel.add(tf.keras.layers.Conv2D(32,(3,3),activation="linear",padding='same'))
+regmodel.add(tf.keras.layers.LeakyReLU(alpha=0.1))
+regmodel.add(tf.keras.layers.MaxPooling2D(pool_size=(2,2),padding='same'))
+regmodel.add(tf.keras.layers.Dropout(0.25))
+#2nd hidden layer
+regmodel.add(tf.keras.layers.Conv2D(64,(3,3),activation="linear",padding='same'))
+regmodel.add(tf.keras.layers.LeakyReLU(alpha=0.1))
+regmodel.add(tf.keras.layers.MaxPooling2D(pool_size=(2,2),padding='same'))
+regmodel.add(tf.keras.layers.Dropout(0.25))
+#3rd hidden layer
+regmodel.add(tf.keras.layers.Conv2D(128,(3,3),activation="linear",padding='same'))
+regmodel.add(tf.keras.layers.LeakyReLU(alpha=0.1))
+regmodel.add(tf.keras.layers.MaxPooling2D(pool_size=(2,2),padding='same'))
+regmodel.add(tf.keras.layers.Dropout(0.40))
+
+regmodel.add(tf.keras.layers.Flatten())
+regmodel.add(tf.keras.layers.Dense(128,activation='linear'))
+regmodel.add(tf.keras.layers.LeakyReLU(alpha=0.1))
+regmodel.add(tf.keras.layers.Dropout(0.3))
+regmodel.add(tf.keras.layers.Dense(num_classes,activation='softmax'))#output final layer
+regmodel.compile(loss=tf.keras.losses.categorical_crossentropy,optimizer=tf.keras.optimizers.Adam(),metrics=['accuracy'])
+reg_model_train=regmodel.fit(train_X,train_label,batch_size=64,epochs=20,verbose=1,validation_data=(valid_X,valid_label))
