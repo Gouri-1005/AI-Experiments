@@ -1,0 +1,40 @@
+# word embeddings
+sentences=[
+    "India is a diverse and culturally rich country located in South Asia.",
+    "It is the world’s largest democracy with a population of over 1.4 billion people.",
+    "Hockey is the national sport of India.",
+
+    "Hockey is a popular team sport played with a stick and a ball or puck.",
+    "It requires speed, teamwork, and good coordination among players.",
+
+    "Artificial Intelligence is a technology that enables machines to think and learn like humans.",
+    "AI is used in applications such as chatbots, self-driving cars, and facial recognition systems."
+]
+#importing the libraries
+import numpy as np
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer  #TF-Bow
+from sklearn.feature_extraction.text import TfidfVectorizer #TFIDF
+from sklearn.metrics.pairwise import cosine_similarity
+#Embeddings using TF-Bow approach
+tf_vectorizer=CountVectorizer()
+tf_matrix=tf_vectorizer.fit_transform(sentences)
+tf_matrix
+tf_similarity=cosine_similarity(tf_matrix)
+tf_similarity
+
+
+#Embeddings using TFIDF approach
+tfidf_vectorizer=TfidfVectorizer()
+tfidf_matrix=tfidf_vectorizer.fit_transform(sentences)
+tfidf_matrix
+tfidf_similarity=cosine_similarity(tfidf_matrix)
+tfidf_similarity
+#finding out the document similarity
+def doc_sim(similarity_matrix, sentences):
+  for i in range(len(sentences)):
+      sims=similarity_matrix[i].copy()
+      sims[i]=-1
+      top_index=np.argmax(sims)
+      print(sentences[i], "-->", sentences[top_index])
+doc_sim(tfidf_similarity, sentences)
