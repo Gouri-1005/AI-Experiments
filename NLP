@@ -1,0 +1,32 @@
+#NLP
+text="""Gouri Unnithan is from electronics background and she recently gave EC GATE Exam in Methoda, Rajkot on 15th Feb 2026 from 9:30 - 12:30 which was moderate-difficuilt level of difficuilty."""
+type(text)
+text[5]
+#NPL: SPACY, NLTK, Gensim
+import spacy
+#load the language model
+nlp=spacy.load('en_core_web_sm')
+doc=nlp(text) 
+type(doc)
+doc[5]
+#Named Entity Recognition: NER
+for token in doc.ents:
+  print(token.text, token.label_)
+#POS tags: Part of speech tagging
+for token in doc:
+  print(token.text, "-->", token.pos_)
+#converts a word to root form
+#stemming vs lemmatization
+text="""I studied AI subject and then meeting Mr. Sachin in a meeting"""
+#stemming
+import nltk
+from nltk.stem.porter import *
+
+p_stem=PorterStemmer()
+for word in text.split():
+  print(word,"-->",p_stem.stem(word))
+
+#lemmatization
+for token in nlp(text):
+  print(token.text,"-> ",token.pos_,
+        "->",token.lemma_)
